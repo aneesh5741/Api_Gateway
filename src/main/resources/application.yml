@@ -1,0 +1,45 @@
+server:
+  port: 8090
+
+eureka:
+  instance:
+   hostname: localhost
+  client:
+   register-with-eureka: true
+   fetch-registry: true
+   serviceUrl:
+    defaultZone: http://localhost:8181/eureka/  
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+       - id: customerms
+         uri: lb://customerms/
+         predicates:
+         - Method=GET,POST
+         - Path=/api/user/**
+         filters:
+         - RewritePath=/api/user(?<segment>/?.*), /user$\{segment}
+         - AddResponseHeader=X-Version-Status, new version coming
+#       - id: customerms
+#         uri: lb://customerms/
+#         predicates:
+#         - Method=GET
+#         - Path=/api/user/{segment}
+#         filters:
+#         - SetPath=/user/{segment}
+#         - AddResponseHeader=X-Version-Status, new version coming
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+       
+         
+         
+       
